@@ -32,7 +32,7 @@ for expert in experts:
     expert.eval()
 # set parameters
 m = 4
-T = 50000
+T = 1000
 epsilon = 0.001
 rho = 1
 print(epsilon)
