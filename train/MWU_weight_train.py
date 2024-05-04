@@ -11,7 +11,7 @@ from models.model_v3 import *
 from models.model_v4 import *
 
 # set training data for MWU
-mwu_data = torchvision.datasets.CIFAR10(root="../dataset", train=True, transform=torchvision.transforms.ToTensor(),
+mwu_data = torchvision.datasets.CIFAR10(root="../dataset", train=False, transform=torchvision.transforms.ToTensor(),
                                         download=True)
 mwu_dataloader = DataLoader(mwu_data, batch_size=1, shuffle=True)
 T = len(mwu_data)
@@ -41,6 +41,7 @@ print(epsilon)
 w = [1 for _ in range(m)]
 p = [0 for _ in range(m)]
 loss = [0 for _ in range(m)]
+
 count = 1
 # MWU loop
 with torch.no_grad():
