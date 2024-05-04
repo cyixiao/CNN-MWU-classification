@@ -32,7 +32,7 @@ for expert in experts:
     expert.eval()
 # set parameters
 m = 4
-T = 1000
+T = 100
 epsilon = 0.01
 rho = 1
 print(epsilon)
@@ -52,9 +52,9 @@ with torch.no_grad():
         # compute loss function
         for i in range(m):
             if outputs[i].argmax(1) == target:
-                loss[i] = -0.1
+                loss[i] = -1
             else:
-                loss[i] = 1
+                loss[i] = 0.5
             # weight update
             w[i] = w[i] * (1 - epsilon * (loss[i] / rho))
 

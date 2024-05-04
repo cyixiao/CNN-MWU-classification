@@ -19,6 +19,8 @@ weights_path = "trained_models/final_mwu_weights.pth"
 weights = torch.load(weights_path, map_location=torch.device('cpu'))
 print(weights)
 
+# weights = [0.5, 0.8, 0.7, 0.4]
+
 # set expert
 if torch.cuda.is_available():
     device = torch.device('cuda')
