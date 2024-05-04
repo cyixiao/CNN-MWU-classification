@@ -33,7 +33,7 @@ for expert in experts:
 # set parameters
 m = 4
 T = 1000
-epsilon = 0.001
+epsilon = 0.01
 rho = 1
 print(epsilon)
 
@@ -50,18 +50,18 @@ with torch.no_grad():
         target = target.to(device)
         outputs = [expert(img) for expert in experts]
         # compute loss function
-        # for i in range(m):
-        #     if outputs[i].argmax(1) == target:
-        #         loss[i] = -1
-        #     else:
-        #         loss[i] = 1
-        #     # weight update
-        #     w[i] = w[i] * (1 - epsilon * (loss[i] / rho))
+        for i in range(m):
+            if outputs[i].argmax(1) == target:
+                loss[i] = -0.1
+            else:
+                loss[i] = 1
+            # weight update
+            w[i] = w[i] * (1 - epsilon * (loss[i] / rho))
 
         # ============= cross entropy loss function =============
-        for i, output in enumerate(outputs):
-            loss = F.cross_entropy(output, target)  # Remove unsqueeze if not needed
-            w[i] = w[i] * torch.exp(-epsilon * loss)
+        # for i, output in enumerate(outputs):
+        #     loss = F.cross_entropy(output, target)  # Remove unsqueeze if not needed
+        #     w[i] = w[i] * torch.exp(-epsilon * loss)
         # =======================================================
 
         count += 1

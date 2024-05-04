@@ -47,7 +47,7 @@ with torch.no_grad():
         img = img.to(device)
         target = target.to(device)
         outputs = [expert(img) for expert in experts]
-        p = [weights[i].item() for i in range(4)]
+        p = [weights[i] for i in range(4)]
         total_weight = sum(p)
         # Normalize probabilities
         p = [pi / total_weight for pi in p]
