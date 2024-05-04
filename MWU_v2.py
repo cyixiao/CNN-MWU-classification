@@ -1,6 +1,6 @@
 import torchvision
 import numpy
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, Subset
 from models.model_v1 import *
 from models.model_v2 import *
 from models.model_v3 import *
@@ -10,8 +10,14 @@ from tqdm import tqdm
 # set training data for MWU
 mwu_data = torchvision.datasets.CIFAR10(root="dataset", train=False, transform=torchvision.transforms.ToTensor(),
                                         download=True)
-mwu_dataloader = DataLoader(mwu_data, batch_size=1)
-total_num = len(mwu_data)
+total_entries = len(mwu_data)
+subset_indices = list(range(total_entries - 9000, total_entries))  # Last 9000 indices
+
+data_subset = Subset(mwu_data, subset_indices)
+mwu_dataloader = DataLoader(data_subset, batch_size=1, shuffle=False)
+total_num = len(data_subset)
+print(total_num)
+
 
 # get saved weight
 weights_path = "trained_models/final_mwu_weights.pth"
@@ -47,13 +53,11 @@ with torch.no_grad():
         img = img.to(device)
         target = target.to(device)
         outputs = [expert(img) for expert in experts]
-        p = [weights[i] for i in range(4)]
-        total_weight = sum(p)
-        # Normalize probabilities
-        p = [pi / total_weight for pi in p]
-        # make sure they sum to exactly 1 by adjusting due to floating-point precision
-        p = [float(i) / sum(p) for i in p]
-        chosen_expert = numpy.random.choice(4, 1, p=p)[0]
+        weights_tensor = torch.tensor(weights, device=device)
+        p = torch.softmax(weights_tensor, dim=0)
+        p_numpy = p.cpu().numpy()
+
+        chosen_expert = numpy.random.choice(4, 1, p=p_numpy)[0]
         # find the class with the highest cumulative weight
         final_prediction = experts[chosen_expert](img).argmax(1)
 

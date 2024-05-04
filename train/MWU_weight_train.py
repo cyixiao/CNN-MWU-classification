@@ -1,7 +1,7 @@
 import torch
 import torchvision
 import numpy as np
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, Subset
 from tqdm import tqdm
 import torch.nn.functional as F
 
@@ -11,9 +11,12 @@ from models.model_v3 import *
 from models.model_v4 import *
 
 # set training data for MWU
-mwu_data = torchvision.datasets.CIFAR10(root="../dataset", train=False, transform=torchvision.transforms.ToTensor(),
-                                        download=True)
-mwu_dataloader = DataLoader(mwu_data, batch_size=1, shuffle=True)
+full_data = torchvision.datasets.CIFAR10(root="../dataset", train=False, transform=torchvision.transforms.ToTensor(),
+                                         download=False)
+# first 1000 as train data
+subset_indices = list(range(1000))
+mwu_data = Subset(full_data, subset_indices)
+mwu_dataloader = DataLoader(mwu_data, batch_size=1, shuffle=False)
 T = len(mwu_data)
 
 # set expert
@@ -32,8 +35,8 @@ for expert in experts:
     expert.eval()
 # set parameters
 m = 4
-T = 100
-epsilon = 0.01
+T = 1000
+epsilon = 0.001
 rho = 1
 print(epsilon)
 

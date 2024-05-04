@@ -1,7 +1,7 @@
 import torch
 import torchvision
 import numpy
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, Subset
 from models.model_v1 import *
 from models.model_v2 import *
 from models.model_v3 import *
@@ -9,10 +9,16 @@ from models.model_v4 import *
 from tqdm import tqdm
 
 # set training data for MWU
+
 mwu_data = torchvision.datasets.CIFAR10(root="dataset", train=False, transform=torchvision.transforms.ToTensor(),
                                         download=True)
-mwu_dataloader = DataLoader(mwu_data, batch_size=1)
-total_num = len(mwu_data)
+total_entries = len(mwu_data)
+subset_indices = list(range(total_entries - 9000, total_entries))  # Last 9000 indices
+
+data_subset = Subset(mwu_data, subset_indices)
+mwu_dataloader = DataLoader(data_subset, batch_size=1, shuffle=False)
+total_num = len(data_subset)
+print(total_num)
 
 # get saved weight
 weights_path = "trained_models/final_mwu_weights.pth"
