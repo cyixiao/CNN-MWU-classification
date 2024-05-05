@@ -36,9 +36,9 @@ for expert in experts:
 # set parameters
 m = 4
 T = 1000
-epsilon = 0.001
+epsilon = np.sqrt(np.log(m) / T)
 rho = 1
-print(epsilon)
+print("epsilon: ", epsilon)
 
 # dictionaries of weights, multipliers, and losses
 w = [1 for _ in range(m)]
@@ -56,16 +56,46 @@ with torch.no_grad():
         # compute loss function
         # for i in range(m):
         #     if outputs[i].argmax(1) == target:
-        #         loss[i] = -1
+        #         loss[i] = -0.1
         #     else:
-        #         loss[i] = 0.5
-        #     # weight update
-        #     w[i] = w[i] * (1 - epsilon * (loss[i] / rho))
+        #         loss[i] = 0.1
+            # weight update
+            # WMU
+            # w[i] = w[i] * (1 - epsilon * (loss[i] / rho))
+
+            # exponential weighting
+            # w[i] = w[i] * np.exp(-epsilon * loss[i])
+
+            # additive wighting
+            # w[i] = max(w[i] + epsilon * (rho - loss[i]), 0)
+
+            # adaptive epsilon
+            # epsilon_i = epsilon / np.sqrt(count + 1)
+            # w[i] = w[i] * np.exp(-epsilon * loss[i])
 
         # ============= cross entropy loss function =============
+        # for i, output in enumerate(outputs):
+        #     loss = F.cross_entropy(output, target)
+        #     w[i] = w[i] * torch.exp(-epsilon * loss)
+        # =======================================================
+
+        # ======================= MSE loss =======================
+        # better if continuous probabilities
         for i, output in enumerate(outputs):
-            loss = F.cross_entropy(output, target)  # Remove unsqueeze if not needed
+            target_one_hot = F.one_hot(target, num_classes=output.shape[1]).float()
+            loss = F.mse_loss(F.softmax(output, dim=1), target_one_hot)
+            # exponential weighting
             w[i] = w[i] * torch.exp(-epsilon * loss)
+
+            # WMU
+            # w[i] = w[i] * (1 - epsilon * (loss / rho))
+
+            # additive wighting
+            # w[i] = max(w[i] + epsilon * (rho - loss), 0)
+
+            # adaptive epsilon
+            # epsilon_i = epsilon / np.sqrt(count + 1)
+            # w[i] = w[i] * np.exp(-epsilon * loss)
         # =======================================================
 
         count += 1

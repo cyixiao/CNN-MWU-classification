@@ -1,4 +1,3 @@
-import torch
 import torchvision
 import numpy
 from torch.utils.data import DataLoader, Subset
@@ -8,8 +7,9 @@ from models.model_v3 import *
 from models.model_v4 import *
 from tqdm import tqdm
 
-# set training data for MWU
+# Firstly normalize the weights, then randomly select the output of an expert as the output of this system.
 
+# set training data for MWU
 mwu_data = torchvision.datasets.CIFAR10(root="dataset", train=False, transform=torchvision.transforms.ToTensor(),
                                         download=True)
 total_entries = len(mwu_data)
@@ -20,12 +20,12 @@ mwu_dataloader = DataLoader(data_subset, batch_size=1, shuffle=False)
 total_num = len(data_subset)
 print(total_num)
 
+
 # get saved weight
 weights_path = "trained_models/final_mwu_weights.pth"
 weights = torch.load(weights_path, map_location=torch.device('cpu'))
 print(weights)
-
-# weights = [0.5, 0.8, 0.7, 0.4]
+total_weight = sum(weights)
 
 # set expert
 if torch.cuda.is_available():
@@ -55,12 +55,13 @@ with torch.no_grad():
         img = img.to(device)
         target = target.to(device)
         outputs = [expert(img) for expert in experts]
-        p = numpy.zeros(10)
-        for i in range(4):
-            p[outputs[i].argmax(1)] += weights[i]
+        weights_tensor = torch.tensor(weights, device=device)
+        p = torch.softmax(weights_tensor, dim=0)
+        p_numpy = p.cpu().numpy()
 
+        chosen_expert = numpy.random.choice(4, 1, p=p_numpy)[0]
         # find the class with the highest cumulative weight
-        final_prediction = numpy.argmax(p)
+        final_prediction = experts[chosen_expert](img).argmax(1)
 
         # check if the prediction is correct
         if final_prediction == target:
