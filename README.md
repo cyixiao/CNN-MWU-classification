@@ -35,3 +35,6 @@ Our approach achieved an ensemble accuracy of 76%, which is 3% higher than the b
 
 ## Conclusion and Future Work
 The project demonstrates the potential of ensemble learning in improving prediction accuracy in image classification tasks. Future work will focus on refining CNN architectures, exploring additional algorithms, and expanding the application to other datasets.
+
+## Access the Full Report
+For a detailed analysis, please refer to our [Report.pdf](./Report.pdf).
