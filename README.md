@@ -12,8 +12,8 @@ The CIFAR-10 dataset comprises 60,000 color images of 32x32 resolution across te
 ## Methodology
 ### Models
 Four CNN architectures:
-Standard alternating convolutional and pooling layers.
-VGG-like consecutive convolutional layers followed by a pooling layer.
+- Standard alternating convolutional and pooling layers.
+- VGG-like consecutive convolutional layers followed by a pooling layer.
 ### Loss Functions
 Symmetrical Reward-Penalty Loss
 Asymmetrical Penalty-Heavy Loss
