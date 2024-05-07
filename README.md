@@ -1,4 +1,3 @@
-# 515-Final-Project
 # Optimizing Image Classification Accuracy with MWU on Neural Networks
 
 ## Overview
